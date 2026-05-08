@@ -13,10 +13,13 @@ const pool = mysql.createPool({
   port: Number(process.env.MYSQL_PORT || 3306),
   user: process.env.MYSQL_USER || 'root',
   password: process.env.MYSQL_PASSWORD || '',
-  database: process.env.MYSQL_DATABASE || 'warehouse_inventory',
+  database: process.env.MYSQL_DATABASE || 'defaultdb',
   waitForConnections: true,
   connectionLimit: 10,
-  ssl: process.env.MYSQL_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+  connectTimeout: 10000, // Tambahkan timeout 10 detik
+  ssl: {
+    rejectUnauthorized: false, // Ini penting untuk koneksi cloud database
+  },
 });
 
 async function query(sql, params = []) {
