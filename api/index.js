@@ -81,7 +81,7 @@ router.get('/dashboard', async (_req, res) => {
       JOIN products p ON p.product_id = st.product_id
       LEFT JOIN users u ON u.user_id = st.user_id
       ORDER BY st.transaction_date DESC
-      LIMIT 5
+      LIMIT 25
     `);
 
     res.json({ summary, recentTransactions });
