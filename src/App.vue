@@ -64,7 +64,7 @@ const toggleSidebar = () => {
           <span>{{ item.label }}</span>
         </RouterLink>
 
-        <p class="sidebar-label mt-4">Operasional</p>
+        <p class="sidebar-label mt-4"></p>
         
       </nav>
 
