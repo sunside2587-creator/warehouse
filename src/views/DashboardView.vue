@@ -211,7 +211,7 @@ watch([groupedRecentTransactions, groupedLowStock], () => {
         </div>
         
         <!-- Scrollspy Nav for Transactions -->
-        <div v-if="groupedRecentTransactions.length > 1" class="scrollspy-nav border-bottom px-3 py-2 bg-light-subtle">
+        <div class="scrollspy-nav border-bottom px-3 py-2 bg-light-subtle">
           <div class="d-flex gap-2 overflow-auto pb-1" style="scrollbar-width: none;">
             <button
               v-for="group in groupedRecentTransactions"
@@ -278,7 +278,7 @@ watch([groupedRecentTransactions, groupedLowStock], () => {
         </div>
 
         <!-- Scrollspy Nav for Low Stock -->
-        <div v-if="groupedLowStock.length > 1" class="scrollspy-nav border-bottom px-3 py-2 bg-light-subtle">
+        <div class="scrollspy-nav border-bottom px-3 py-2 bg-light-subtle">
           <div class="d-flex gap-2 overflow-auto pb-1" style="scrollbar-width: none;">
             <button
               v-for="group in groupedLowStock"
