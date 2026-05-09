@@ -29,7 +29,7 @@ const filteredTransactions = computed(() => {
 const groupedTransactions = computed(() => {
   const groups = {};
   filteredTransactions.value.forEach((t) => {
-    const date = new Date(t.transaction_date).toISOString().split('T')[0];
+    const date = new Date(t.transaction_date).toLocaleDateString('en-CA');
     if (!groups[date]) {
       groups[date] = [];
     }
@@ -71,6 +71,10 @@ function setupScrollspy() {
 
   const sections = document.querySelectorAll('.transaction-group');
   sections.forEach((section) => observer.value.observe(section));
+
+  if (sections.length > 0 && !activeSection.value) {
+    activeSection.value = sections[0].id;
+  }
 }
 
 function scrollToSection(id) {
@@ -297,8 +301,9 @@ onMounted(async () => {
             <button
               v-for="group in groupedTransactions"
               :key="'nav-' + group.date"
-              class="btn btn-sm text-nowrap"
-              :class="activeSection === 'group-' + group.date ? 'btn-primary' : 'btn-outline-secondary border-0'"
+              class="btn btn-sm text-nowrap py-1 px-3"
+              :style="{ fontSize: '0.75rem' }"
+              :class="activeSection === 'group-' + group.date ? 'btn-primary' : 'btn-outline-secondary border-0 text-muted'"
               @click="scrollToSection('group-' + group.date)"
             >
               {{ new Date(group.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) }}

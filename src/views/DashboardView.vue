@@ -30,7 +30,8 @@ const lowStockProducts = computed(() =>
 const groupedRecentTransactions = computed(() => {
   const groups = {};
   dashboard.value.recentTransactions?.forEach((t) => {
-    const date = new Date(t.transaction_date).toISOString().split('T')[0];
+    // Gunakan local date (YYYY-MM-DD) agar tidak bergeser hari karena UTC
+    const date = new Date(t.transaction_date).toLocaleDateString('en-CA');
     if (!groups[date]) groups[date] = [];
     groups[date].push(t);
   });
@@ -83,6 +84,11 @@ function setupScrollspy(type) {
 
   const sections = document.querySelectorAll(groupClass);
   sections.forEach((section) => observer.value.observe(section));
+
+  // Set initial active section if not set
+  if (sections.length > 0 && !activeRef.value) {
+    activeRef.value = sections[0].id;
+  }
 }
 
 function scrollToSection(containerClass, id, activeRef) {
@@ -216,8 +222,8 @@ watch([groupedRecentTransactions, groupedLowStock], () => {
             <button
               v-for="group in groupedRecentTransactions"
               :key="'nav-t-' + group.date"
-              class="btn btn-sm text-nowrap py-0 px-2"
-              :style="{ fontSize: '0.65rem' }"
+              class="btn btn-sm text-nowrap py-1 px-3"
+              :style="{ fontSize: '0.75rem' }"
               :class="activeTransactionSection === 'group-t-' + group.date ? 'btn-primary' : 'btn-outline-secondary border-0 text-muted'"
               @click="scrollToSection('.transaction-scroll', 'group-t-' + group.date, activeTransactionSection)"
             >
@@ -283,8 +289,8 @@ watch([groupedRecentTransactions, groupedLowStock], () => {
             <button
               v-for="group in groupedLowStock"
               :key="'nav-s-' + group.name"
-              class="btn btn-sm text-nowrap py-0 px-2"
-              :style="{ fontSize: '0.65rem' }"
+              class="btn btn-sm text-nowrap py-1 px-3"
+              :style="{ fontSize: '0.75rem' }"
               :class="activeStockSection === 'group-s-' + group.name ? 'btn-primary' : 'btn-outline-secondary border-0 text-muted'"
               @click="scrollToSection('.stock-scroll', 'group-s-' + group.name, activeStockSection)"
             >
