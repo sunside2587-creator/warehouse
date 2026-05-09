@@ -91,11 +91,10 @@ function setupScrollspy(type) {
   }
 }
 
-function scrollToSection(containerClass, id, activeRef) {
+function scrollToSection(id) {
   const element = document.getElementById(id);
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' });
-    activeRef.value = id;
   }
 }
 
@@ -225,7 +224,7 @@ watch([groupedRecentTransactions, groupedLowStock], () => {
               class="btn btn-sm text-nowrap py-1 px-3"
               :style="{ fontSize: '0.75rem' }"
               :class="activeTransactionSection === 'group-t-' + group.date ? 'btn-primary' : 'btn-outline-secondary border-0 text-muted'"
-              @click="scrollToSection('.transaction-scroll', 'group-t-' + group.date, activeTransactionSection)"
+              @click="scrollToSection('group-t-' + group.date); activeTransactionSection = 'group-t-' + group.date"
             >
               {{ group.displayDate }}
             </button>
@@ -292,7 +291,7 @@ watch([groupedRecentTransactions, groupedLowStock], () => {
               class="btn btn-sm text-nowrap py-1 px-3"
               :style="{ fontSize: '0.75rem' }"
               :class="activeStockSection === 'group-s-' + group.name ? 'btn-primary' : 'btn-outline-secondary border-0 text-muted'"
-              @click="scrollToSection('.stock-scroll', 'group-s-' + group.name, activeStockSection)"
+              @click="scrollToSection('group-s-' + group.name); activeStockSection = 'group-s-' + group.name"
             >
               {{ group.name }}
             </button>
