@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { AlertCircle, Boxes, Database, RefreshCw, TrendingDown, Wallet } from 'lucide-vue-next';
 import { api, getErrorMessage } from '../services/api';
 
@@ -55,6 +55,43 @@ const groupedLowStock = computed(() => {
     products: groups[name]
   }));
 });
+const activeTransactionSection = ref('');
+const activeStockSection = ref('');
+const transactionObserver = ref(null);
+const stockObserver = ref(null);
+
+function setupScrollspy(type) {
+  const isTransaction = type === 'transaction';
+  const observer = isTransaction ? transactionObserver : stockObserver;
+  const activeRef = isTransaction ? activeTransactionSection : activeStockSection;
+  const containerClass = isTransaction ? '.transaction-scroll' : '.stock-scroll';
+  const groupClass = isTransaction ? '.transaction-group-item' : '.stock-group-item';
+
+  if (observer.value) observer.value.disconnect();
+
+  observer.value = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        activeRef.value = entry.target.id;
+      }
+    });
+  }, {
+    root: document.querySelector(containerClass),
+    threshold: 0,
+    rootMargin: '-5% 0px -90% 0px'
+  });
+
+  const sections = document.querySelectorAll(groupClass);
+  sections.forEach((section) => observer.value.observe(section));
+}
+
+function scrollToSection(containerClass, id, activeRef) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+    activeRef.value = id;
+  }
+}
 
 const cards = computed(() => [
   {
@@ -117,7 +154,20 @@ async function loadDashboard() {
   }
 }
 
-onMounted(loadDashboard);
+onMounted(async () => {
+  await loadDashboard();
+  nextTick(() => {
+    setupScrollspy('transaction');
+    setupScrollspy('stock');
+  });
+});
+
+watch([groupedRecentTransactions, groupedLowStock], () => {
+  nextTick(() => {
+    setupScrollspy('transaction');
+    setupScrollspy('stock');
+  });
+}, { deep: true });
 </script>
 
 <template>
@@ -159,7 +209,24 @@ onMounted(loadDashboard);
         <div class="panel-header">
           <h2 class="h5 mb-0">Transaksi Terakhir</h2>
         </div>
-        <div class="scrollable-container" style="height: 400px;">
+        
+        <!-- Scrollspy Nav for Transactions -->
+        <div v-if="groupedRecentTransactions.length > 1" class="scrollspy-nav border-bottom px-3 py-2 bg-light-subtle">
+          <div class="d-flex gap-2 overflow-auto pb-1" style="scrollbar-width: none;">
+            <button
+              v-for="group in groupedRecentTransactions"
+              :key="'nav-t-' + group.date"
+              class="btn btn-sm text-nowrap py-0 px-2"
+              :style="{ fontSize: '0.65rem' }"
+              :class="activeTransactionSection === 'group-t-' + group.date ? 'btn-primary' : 'btn-outline-secondary border-0 text-muted'"
+              @click="scrollToSection('.transaction-scroll', 'group-t-' + group.date, activeTransactionSection)"
+            >
+              {{ group.displayDate }}
+            </button>
+          </div>
+        </div>
+
+        <div class="scrollable-container transaction-scroll" style="height: 400px; position: relative;">
           <div v-if="loading" class="text-center text-muted py-5">
             <RefreshCw class="spinner mb-2" :size="24" />
             <p>Memuat transaksi...</p>
@@ -168,7 +235,7 @@ onMounted(loadDashboard);
             <p>Belum ada transaksi.</p>
           </div>
           <div v-else>
-            <div v-for="group in groupedRecentTransactions" :key="group.date" class="transaction-group">
+            <div v-for="group in groupedRecentTransactions" :key="group.date" :id="'group-t-' + group.date" class="transaction-group transaction-group-item">
               <div class="group-header sticky-top bg-light-subtle px-3 py-1 border-bottom border-top fw-bold text-muted small">
                 {{ group.displayDate }}
               </div>
@@ -209,7 +276,24 @@ onMounted(loadDashboard);
         <div class="panel-header">
           <h2 class="h5 mb-0">Produk Perlu Restock</h2>
         </div>
-        <div class="scrollable-container" style="height: 400px;">
+
+        <!-- Scrollspy Nav for Low Stock -->
+        <div v-if="groupedLowStock.length > 1" class="scrollspy-nav border-bottom px-3 py-2 bg-light-subtle">
+          <div class="d-flex gap-2 overflow-auto pb-1" style="scrollbar-width: none;">
+            <button
+              v-for="group in groupedLowStock"
+              :key="'nav-s-' + group.name"
+              class="btn btn-sm text-nowrap py-0 px-2"
+              :style="{ fontSize: '0.65rem' }"
+              :class="activeStockSection === 'group-s-' + group.name ? 'btn-primary' : 'btn-outline-secondary border-0 text-muted'"
+              @click="scrollToSection('.stock-scroll', 'group-s-' + group.name, activeStockSection)"
+            >
+              {{ group.name }}
+            </button>
+          </div>
+        </div>
+
+        <div class="scrollable-container stock-scroll" style="height: 400px; position: relative;">
           <div v-if="loading" class="text-center text-muted py-5">
             <RefreshCw class="spinner mb-2" :size="24" />
             <p>Memuat produk...</p>
@@ -218,7 +302,7 @@ onMounted(loadDashboard);
             <p>Semua stok aman.</p>
           </div>
           <div v-else>
-            <div v-for="group in groupedLowStock" :key="group.name" class="transaction-group">
+            <div v-for="group in groupedLowStock" :key="group.name" :id="'group-s-' + group.name" class="transaction-group stock-group-item">
               <div class="group-header sticky-top bg-light-subtle px-3 py-1 border-bottom border-top fw-bold text-muted small">
                 {{ group.name }}
               </div>
