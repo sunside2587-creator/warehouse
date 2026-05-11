@@ -157,7 +157,7 @@ async function saveTransaction() {
   success.value = '';
 
   try {
-    await api.patch(`/products/${form.product_id}/stock`, {
+    await api.put(`/products/${form.product_id}/stock`, {
       transaction_type: form.transaction_type,
       quantity: Number(form.quantity),
       user_id: form.user_id ? Number(form.user_id) : null,
