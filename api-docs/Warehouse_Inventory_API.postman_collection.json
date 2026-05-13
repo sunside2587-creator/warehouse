@@ -15,11 +15,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/health",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/health",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"health"
 							]
 						}
@@ -37,11 +39,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/dashboard",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/dashboard",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"dashboard"
 							]
 						}
@@ -59,11 +63,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/products",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"products"
 							]
 						}
@@ -85,11 +91,13 @@
 							"raw": "{\n    \"sku\": \"PROD-001\",\n    \"product_name\": \"Sample Product\",\n    \"category_id\": 1,\n    \"supplier_id\": 1,\n    \"stock_quantity\": 100,\n    \"reorder_level\": 10,\n    \"price\": 15000,\n    \"unit\": \"pcs\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/products",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"products"
 							]
 						}
@@ -99,7 +107,7 @@
 				{
 					"name": "Update Product Stock",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -111,11 +119,13 @@
 							"raw": "{\n    \"stock_quantity\": 150\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/products/1",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"products",
 								"1"
 							]
@@ -126,7 +136,7 @@
 				{
 					"name": "Add/Remove Stock Transaction",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -138,11 +148,13 @@
 							"raw": "{\n    \"quantity\": 10,\n    \"transaction_type\": \"IN\",\n    \"user_id\": 1,\n    \"notes\": \"Restocking item\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/products/1/stock",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1/stock",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"products",
 								"1",
 								"stock"
@@ -155,13 +167,24 @@
 					"name": "Delete Product",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"message\": \"Data ID ini akan dihapus permanen\"\n}"
+						},
 						"url": {
-							"raw": "{{base_url}}/products/1",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"products",
 								"1"
 							]
@@ -180,11 +203,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/categories",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/categories",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"categories"
 							]
 						}
@@ -206,11 +231,13 @@
 							"raw": "{\n    \"category_name\": \"Electronics\",\n    \"description\": \"Electronic items and gadgets\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/categories",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/categories",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"categories"
 							]
 						}
@@ -228,11 +255,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/suppliers",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/suppliers",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"suppliers"
 							]
 						}
@@ -254,11 +283,13 @@
 							"raw": "{\n    \"supplier_name\": \"Global Tech Solutions\",\n    \"contact_name\": \"John Doe\",\n    \"phone\": \"08123456789\",\n    \"email\": \"contact@globaltech.com\",\n    \"address\": \"123 Tech Park, Silicon Valley\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/suppliers",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/suppliers",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"suppliers"
 							]
 						}
@@ -276,11 +307,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/stock-transactions",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/stock-transactions",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"stock-transactions"
 							]
 						}
@@ -291,13 +324,24 @@
 					"name": "Delete Transaction",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"message\": \"Transaksi ini akan dihapus dan stok akan di-rollback\"\n}"
+						},
 						"url": {
-							"raw": "{{base_url}}/stock-transactions/1",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/stock-transactions/1",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"stock-transactions",
 								"1"
 							]
@@ -316,11 +360,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/users",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/users",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"{{api_path}}",
 								"users"
 							]
 						}
@@ -332,8 +378,18 @@
 	],
 	"variable": [
 		{
+			"key": "protocol",
+			"value": "https",
+			"type": "string"
+		},
+		{
 			"key": "base_url",
-			"value": "http://localhost:3001/api",
+			"value": "warehouse-eight-omega.vercel.app",
+			"type": "string"
+		},
+		{
+			"key": "api_path",
+			"value": "api",
 			"type": "string"
 		}
 	]

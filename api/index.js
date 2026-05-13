@@ -276,7 +276,7 @@ router.post('/products', async (req, res) => {
   }
 });
 
-router.put('/products/:id', async (req, res) => {
+router.patch('/products/:id', async (req, res) => {
   try {
     const productId = Number(req.params.id);
     const stockQuantity = Number(req.body.stock_quantity);
@@ -340,7 +340,7 @@ router.delete('/products/:id', async (req, res) => {
   }
 });
 
-router.put('/products/:id/stock', async (req, res) => {
+router.patch('/products/:id/stock', async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
