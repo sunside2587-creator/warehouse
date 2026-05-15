@@ -224,7 +224,7 @@ async function updateStock(product) {
   success.value = '';
 
   try {
-    await api.put(`/products/${product.product_id}`, {
+    await api.patch(`/products/${product.product_id}`, {
       stock_quantity: nextStock,
     });
     success.value = `Stok ${product.product_name} berhasil diperbarui.`;

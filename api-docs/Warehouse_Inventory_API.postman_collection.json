@@ -88,7 +88,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"sku\": \"PROD-001\",\n    \"product_name\": \"Sample Product\",\n    \"category_id\": 1,\n    \"supplier_id\": 1,\n    \"stock_quantity\": 100,\n    \"reorder_level\": 10,\n    \"price\": 15000,\n    \"unit\": \"pcs\"\n}"
+							"raw": "{\n    \"sku\": \"PROD-001\",\n    \"product_name\": \"Sample Product\",\n    \"category_id\": 1,\n    \"supplier_id\": 1,\n    \"stock_quantity\": 100,\n    \"reorder_level\": 10,\n    \"price\": 15000,\n    \"unit\": \"pcs\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products",
@@ -116,7 +121,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"stock_quantity\": 150\n}"
+							"raw": "{\n    \"stock_quantity\": 150\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1",
@@ -145,7 +155,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"quantity\": 10,\n    \"transaction_type\": \"IN\",\n    \"user_id\": 1,\n    \"notes\": \"Restocking item\"\n}"
+							"raw": "{\n    \"quantity\": 10,\n    \"transaction_type\": \"IN\",\n    \"user_id\": 1,\n    \"notes\": \"Restocking item\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1/stock",
@@ -175,7 +190,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"message\": \"Data ID ini akan dihapus permanen\"\n}"
+							"raw": "{\n    \"message\": \"Data ID ini akan dihapus permanen\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1",
@@ -228,7 +248,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"category_name\": \"Electronics\",\n    \"description\": \"Electronic items and gadgets\"\n}"
+							"raw": "{\n    \"category_name\": \"Electronics\",\n    \"description\": \"Electronic items and gadgets\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/categories",
@@ -280,7 +305,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"supplier_name\": \"Global Tech Solutions\",\n    \"contact_name\": \"John Doe\",\n    \"phone\": \"08123456789\",\n    \"email\": \"contact@globaltech.com\",\n    \"address\": \"123 Tech Park, Silicon Valley\"\n}"
+							"raw": "{\n    \"supplier_name\": \"Global Tech Solutions\",\n    \"contact_name\": \"John Doe\",\n    \"phone\": \"08123456789\",\n    \"email\": \"contact@globaltech.com\",\n    \"address\": \"123 Tech Park, Silicon Valley\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/suppliers",
@@ -332,7 +362,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"message\": \"Transaksi ini akan dihapus dan stok akan di-rollback\"\n}"
+							"raw": "{\n    \"message\": \"Transaksi ini akan dihapus dan stok akan di-rollback\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/stock-transactions/1",
