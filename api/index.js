@@ -2,11 +2,28 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2/promise';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_for_warehouse';
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.status(401).json({ message: 'Akses ditolak. Token tidak ditemukan.' });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Token tidak valid atau sudah kadaluarsa.' });
+    req.user = user;
+    next();
+  });
+}
 
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST || '127.0.0.1',
@@ -58,7 +75,54 @@ router.get('/health', async (_req, res) => {
   }
 });
 
-router.get('/dashboard', async (_req, res) => {
+router.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username dan password wajib diisi.' });
+    }
+
+    const users = await query('SELECT * FROM users WHERE username = ?', [username]);
+    if (users.length === 0) {
+      return res.status(401).json({ message: 'Username atau password salah.' });
+    }
+
+    const user = users[0];
+    let validPassword = false;
+    
+    // Support dummy data from inventory.sql by allowing 'password123'
+    if (user.password_hash.startsWith('$2b$10$dummyhash')) {
+      validPassword = (password === 'password123');
+    } else {
+      validPassword = await bcrypt.compare(password, user.password_hash);
+    }
+
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Username atau password salah.' });
+    }
+
+    const token = jwt.sign(
+      { user_id: user.user_id, username: user.username, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      message: 'Login berhasil.',
+      token,
+      user: {
+        user_id: user.user_id,
+        username: user.username,
+        full_name: user.full_name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    handleError(res, error);
+  }
+});
+
+router.get('/dashboard', authenticateToken, async (_req, res) => {
   try {
     const [summary] = await query(`
       SELECT
@@ -90,7 +154,7 @@ router.get('/dashboard', async (_req, res) => {
   }
 });
 
-router.get('/categories', async (_req, res) => {
+router.get('/categories', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT category_id, category_name, description
@@ -103,7 +167,7 @@ router.get('/categories', async (_req, res) => {
   }
 });
 
-router.post('/categories', async (req, res) => {
+router.post('/categories', authenticateToken, async (req, res) => {
   try {
     const categoryName = req.body.category_name?.trim();
     const description = req.body.description?.trim() || null;
@@ -129,7 +193,7 @@ router.post('/categories', async (req, res) => {
   }
 });
 
-router.get('/suppliers', async (_req, res) => {
+router.get('/suppliers', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT supplier_id, supplier_name, contact_name, phone, email, address
@@ -142,7 +206,7 @@ router.get('/suppliers', async (_req, res) => {
   }
 });
 
-router.post('/suppliers', async (req, res) => {
+router.post('/suppliers', authenticateToken, async (req, res) => {
   try {
     const supplierName = req.body.supplier_name?.trim();
     const contactName = req.body.contact_name?.trim() || null;
@@ -171,7 +235,7 @@ router.post('/suppliers', async (req, res) => {
   }
 });
 
-router.get('/users', async (_req, res) => {
+router.get('/users', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT user_id, username, full_name, role, email, created_at
@@ -184,7 +248,7 @@ router.get('/users', async (_req, res) => {
   }
 });
 
-router.get('/products', async (_req, res) => {
+router.get('/products', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT
@@ -211,7 +275,7 @@ router.get('/products', async (_req, res) => {
   }
 });
 
-router.get('/stock-transactions', async (_req, res) => {
+router.get('/stock-transactions', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT
@@ -237,7 +301,7 @@ router.get('/stock-transactions', async (_req, res) => {
   }
 });
 
-router.post('/products', async (req, res) => {
+router.post('/products', authenticateToken, async (req, res) => {
   try {
     const {
       sku,
@@ -276,7 +340,7 @@ router.post('/products', async (req, res) => {
   }
 });
 
-router.patch('/products/:id', async (req, res) => {
+router.patch('/products/:id', authenticateToken, async (req, res) => {
   try {
     const productId = Number(req.params.id);
     const stockQuantity = Number(req.body.stock_quantity);
@@ -308,7 +372,7 @@ router.patch('/products/:id', async (req, res) => {
   }
 });
 
-router.delete('/products/:id', async (req, res) => {
+router.delete('/products/:id', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
@@ -340,7 +404,7 @@ router.delete('/products/:id', async (req, res) => {
   }
 });
 
-router.patch('/products/:id/stock', async (req, res) => {
+router.patch('/products/:id/stock', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
@@ -404,7 +468,7 @@ router.patch('/products/:id/stock', async (req, res) => {
   }
 });
 
-router.delete('/stock-transactions/:id', async (req, res) => {
+router.delete('/stock-transactions/:id', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {

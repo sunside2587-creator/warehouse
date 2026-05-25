@@ -129,7 +129,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/2",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
@@ -137,7 +137,7 @@
 							"path": [
 								"{{api_path}}",
 								"products",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -163,7 +163,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1/stock",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/2/stock",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
@@ -171,7 +171,7 @@
 							"path": [
 								"{{api_path}}",
 								"products",
-								"1",
+								"2",
 								"stock"
 							]
 						}
@@ -198,7 +198,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/1",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/products/2",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
@@ -206,7 +206,7 @@
 							"path": [
 								"{{api_path}}",
 								"products",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -370,7 +370,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/stock-transactions/1",
+							"raw": "{{protocol}}://{{base_url}}/{{api_path}}/stock-transactions/2",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}"
@@ -378,7 +378,7 @@
 							"path": [
 								"{{api_path}}",
 								"stock-transactions",
-								"1"
+								"2"
 							]
 						}
 					},

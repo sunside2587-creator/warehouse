@@ -15,8 +15,11 @@ import {
   UserRound,
   Warehouse,
 } from 'lucide-vue-next';
+import { LogOut } from 'lucide-vue-next';
+import { useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const isSidebarOpen = ref(false);
 
 const navItems = [
@@ -31,11 +34,30 @@ const pageTitle = computed(
       dashboard: 'Dashboard',
       products: 'Produk Gudang',
       transactions: 'Transaksi Stok',
+      login: 'Login',
     })[route.name] || 'Inventaris Gudang',
 );
 
+const currentUser = computed(() => {
+  const userStr = localStorage.getItem('auth_user');
+  if (userStr) {
+    try {
+      return JSON.parse(userStr);
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+});
+
 const handleRefresh = () => {
   window.location.reload();
+};
+
+const handleLogout = () => {
+  localStorage.removeItem('auth_token');
+  localStorage.removeItem('auth_user');
+  router.push('/login');
 };
 
 const toggleSidebar = () => {
@@ -44,7 +66,10 @@ const toggleSidebar = () => {
 </script>
 
 <template>
-  <div class="app-shell">
+  <template v-if="route.name === 'login'">
+    <RouterView />
+  </template>
+  <div v-else class="app-shell">
     <div v-if="isSidebarOpen" class="sidebar-backdrop" @click="isSidebarOpen = false"></div>
     <aside :class="['app-sidebar', { 'sidebar-open': isSidebarOpen }]">
       <RouterLink class="sidebar-brand" to="/">
@@ -105,13 +130,17 @@ const toggleSidebar = () => {
 
           <div class="user-profile">
             <div class="user-info text-end d-none d-sm-flex">
-              <span class="user-name">Sandi Setianto</span>
-              <span class="user-role">Administrator</span>
+              <span class="user-name">{{ currentUser ? currentUser.full_name : 'Guest' }}</span>
+              <span class="user-role" style="text-transform: capitalize;">{{ currentUser ? currentUser.role : 'User' }}</span>
             </div>
             <span class="topbar-avatar d-flex align-items-center justify-content-center">
               <UserRound :size="20" aria-hidden="true" />
             </span>
           </div>
+
+          <button class="topbar-icon text-danger ms-2" type="button" title="Logout" @click="handleLogout">
+            <LogOut :size="18" aria-hidden="true" />
+          </button>
         </div>
       </header>
 

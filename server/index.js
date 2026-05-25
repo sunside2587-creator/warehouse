@@ -4,6 +4,8 @@ import cors from 'cors';
 import mysql from 'mysql2/promise';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const app = express();
 const port = Number(process.env.PORT || 3001);
@@ -14,6 +16,21 @@ const distPath = path.join(__dirname, '..', 'dist');
 
 app.use(cors());
 app.use(express.json());
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_for_warehouse';
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.status(401).json({ message: 'Akses ditolak. Token tidak ditemukan.' });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Token tidak valid atau sudah kadaluarsa.' });
+    req.user = user;
+    next();
+  });
+}
 
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST || '127.0.0.1',
@@ -59,7 +76,54 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
-app.get('/api/dashboard', async (_req, res) => {
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username dan password wajib diisi.' });
+    }
+
+    const users = await query('SELECT * FROM users WHERE username = ?', [username]);
+    if (users.length === 0) {
+      return res.status(401).json({ message: 'Username atau password salah.' });
+    }
+
+    const user = users[0];
+    let validPassword = false;
+    
+    // Support dummy data from inventory.sql by allowing 'password123'
+    if (user.password_hash.startsWith('$2b$10$dummyhash')) {
+      validPassword = (password === 'password123');
+    } else {
+      validPassword = await bcrypt.compare(password, user.password_hash);
+    }
+
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Username atau password salah.' });
+    }
+
+    const token = jwt.sign(
+      { user_id: user.user_id, username: user.username, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      message: 'Login berhasil.',
+      token,
+      user: {
+        user_id: user.user_id,
+        username: user.username,
+        full_name: user.full_name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    handleError(res, error);
+  }
+});
+
+app.get('/api/dashboard', authenticateToken, async (_req, res) => {
   try {
     const [summary] = await query(`
       SELECT
@@ -91,7 +155,7 @@ app.get('/api/dashboard', async (_req, res) => {
   }
 });
 
-app.get('/api/categories', async (_req, res) => {
+app.get('/api/categories', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT category_id, category_name, description
@@ -104,7 +168,7 @@ app.get('/api/categories', async (_req, res) => {
   }
 });
 
-app.post('/api/categories', async (req, res) => {
+app.post('/api/categories', authenticateToken, async (req, res) => {
   try {
     const categoryName = req.body.category_name?.trim();
     const description = req.body.description?.trim() || null;
@@ -130,7 +194,7 @@ app.post('/api/categories', async (req, res) => {
   }
 });
 
-app.get('/api/suppliers', async (_req, res) => {
+app.get('/api/suppliers', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT supplier_id, supplier_name, contact_name, phone, email, address
@@ -143,7 +207,7 @@ app.get('/api/suppliers', async (_req, res) => {
   }
 });
 
-app.post('/api/suppliers', async (req, res) => {
+app.post('/api/suppliers', authenticateToken, async (req, res) => {
   try {
     const supplierName = req.body.supplier_name?.trim();
     const contactName = req.body.contact_name?.trim() || null;
@@ -172,7 +236,7 @@ app.post('/api/suppliers', async (req, res) => {
   }
 });
 
-app.get('/api/users', async (_req, res) => {
+app.get('/api/users', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT user_id, username, full_name, role, email, created_at
@@ -185,7 +249,7 @@ app.get('/api/users', async (_req, res) => {
   }
 });
 
-app.get('/api/products', async (_req, res) => {
+app.get('/api/products', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT
@@ -212,7 +276,7 @@ app.get('/api/products', async (_req, res) => {
   }
 });
 
-app.get('/api/stock-transactions', async (_req, res) => {
+app.get('/api/stock-transactions', authenticateToken, async (_req, res) => {
   try {
     const rows = await query(`
       SELECT
@@ -238,7 +302,7 @@ app.get('/api/stock-transactions', async (_req, res) => {
   }
 });
 
-app.post('/api/products', async (req, res) => {
+app.post('/api/products', authenticateToken, async (req, res) => {
   try {
     const {
       sku,
@@ -277,7 +341,7 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
-app.patch('/api/products/:id', async (req, res) => {
+app.patch('/api/products/:id', authenticateToken, async (req, res) => {
   try {
     const productId = Number(req.params.id);
     const stockQuantity = Number(req.body.stock_quantity);
@@ -309,7 +373,7 @@ app.patch('/api/products/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/api/products/:id', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
@@ -341,7 +405,7 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-app.patch('/api/products/:id/stock', async (req, res) => {
+app.patch('/api/products/:id/stock', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
@@ -405,7 +469,7 @@ app.patch('/api/products/:id/stock', async (req, res) => {
   }
 });
 
-app.delete('/api/stock-transactions/:id', async (req, res) => {
+app.delete('/api/stock-transactions/:id', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
