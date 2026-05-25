@@ -39,16 +39,29 @@ const pageTitle = computed(
     })[route.name] || 'Inventaris Gudang',
 );
 
-const currentUser = computed(() => {
+import { watch } from 'vue';
+
+const currentUser = ref(null);
+
+const checkUser = () => {
   const userStr = localStorage.getItem('auth_user');
   if (userStr) {
     try {
-      return JSON.parse(userStr);
+      currentUser.value = JSON.parse(userStr);
     } catch (e) {
-      return null;
+      currentUser.value = null;
     }
+  } else {
+    currentUser.value = null;
   }
-  return null;
+};
+
+// Check initially
+checkUser();
+
+// Update on route change (e.g., after login redirect)
+watch(() => route.path, () => {
+  checkUser();
 });
 
 const handleRefresh = () => {
