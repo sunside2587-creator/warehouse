@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { RouterLink, RouterView, useRoute } from 'vue-router';
 import {
   ArrowLeftRight,
@@ -14,9 +14,13 @@ import {
   Settings,
   UserRound,
   Warehouse,
+  AlertTriangle,
+  LogOut,
+  User,
+  CheckCircle2
 } from 'lucide-vue-next';
-import { LogOut } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
+import { api } from './services/api';
 
 const route = useRoute();
 const router = useRouter();
@@ -76,6 +80,49 @@ const handleLogout = () => {
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+// --- Low Stock Notification Logic ---
+const lowStockItems = ref([]);
+const showNotifDropdown = ref(false);
+
+const fetchLowStock = async () => {
+  if (!localStorage.getItem('auth_token')) return;
+  try {
+    const res = await api.get('/products');
+    lowStockItems.value = res.data.filter(p => Number(p.stock_quantity) <= Number(p.reorder_level));
+  } catch (err) {
+    console.error('Failed to fetch low stock', err);
+  }
+};
+
+onMounted(() => {
+  fetchLowStock();
+  document.addEventListener('click', closeDropdowns);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdowns);
+});
+
+// --- Dropdowns Logic ---
+const showProfileDropdown = ref(false);
+
+const toggleNotif = (e) => {
+  e.stopPropagation();
+  showNotifDropdown.value = !showNotifDropdown.value;
+  showProfileDropdown.value = false;
+};
+
+const toggleProfile = (e) => {
+  e.stopPropagation();
+  showProfileDropdown.value = !showProfileDropdown.value;
+  showNotifDropdown.value = false;
+};
+
+const closeDropdowns = () => {
+  showNotifDropdown.value = false;
+  showProfileDropdown.value = false;
 };
 </script>
 
@@ -137,10 +184,40 @@ const toggleSidebar = () => {
             <RefreshCw :size="18" aria-hidden="true" />
           </button>
           
-          <button class="topbar-icon" type="button" title="Notifikasi" style="position: relative;">
-            <Bell :size="19" aria-hidden="true" />
-            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="margin-top: 6px; margin-left: -6px;"></span>
-          </button>
+          <div class="position-relative">
+            <button class="topbar-icon" type="button" title="Notifikasi" @click="toggleNotif">
+              <Bell :size="19" aria-hidden="true" />
+              <span v-if="lowStockItems.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; margin-top: 6px; margin-left: -10px;">
+                {{ lowStockItems.length }}
+              </span>
+            </button>
+            
+            <!-- Notif Dropdown -->
+            <div v-if="showNotifDropdown" class="dropdown-menu dropdown-menu-end show shadow-sm border-0 mt-2" style="right: 0; min-width: 320px; position: absolute;" @click.stop>
+              <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+                <h6 class="mb-0 fw-bold">Notifikasi Peringatan</h6>
+                <span class="badge bg-danger">{{ lowStockItems.length }} Stok Menipis</span>
+              </div>
+              <div class="overflow-auto" style="max-height: 300px;">
+                <div v-if="lowStockItems.length === 0" class="p-4 text-center text-muted">
+                  <CheckCircle2 :size="30" class="text-success mb-2 opacity-50" />
+                  <p class="mb-0 small">Semua stok produk dalam kondisi aman.</p>
+                </div>
+                <div v-for="item in lowStockItems" :key="item.product_id" class="p-3 border-bottom dropdown-item-custom">
+                  <div class="d-flex gap-3 align-items-start">
+                    <div class="text-danger mt-1"><AlertTriangle :size="18" /></div>
+                    <div>
+                      <p class="mb-1 fw-bold text-wrap lh-sm" style="font-size: 0.9rem;">{{ item.product_name }}</p>
+                      <p class="mb-0 text-muted small">Sisa stok: <strong class="text-danger">{{ item.stock_quantity }} {{ item.unit }}</strong> (Batas: {{ item.reorder_level }})</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-2 text-center border-top">
+                <RouterLink to="/products" class="text-decoration-none small text-primary fw-medium" @click="closeDropdowns">Lihat Semua Produk</RouterLink>
+              </div>
+            </div>
+          </div>
 
           <button class="topbar-icon d-xl-none" type="button" title="Menu" @click="toggleSidebar">
             <Menu :size="20" aria-hidden="true" />
@@ -148,7 +225,7 @@ const toggleSidebar = () => {
 
           <div class="topbar-divider d-none d-sm-block"></div>
 
-          <div class="user-profile">
+          <div class="user-profile position-relative cursor-pointer" @click="toggleProfile" style="cursor: pointer;">
             <div class="user-info text-end d-none d-sm-flex">
               <span class="user-name">{{ currentUser ? currentUser.full_name : 'Guest' }}</span>
               <span class="user-role" style="text-transform: capitalize;">{{ currentUser ? currentUser.role : 'User' }}</span>
@@ -156,11 +233,22 @@ const toggleSidebar = () => {
             <span class="topbar-avatar d-flex align-items-center justify-content-center">
               <UserRound :size="20" aria-hidden="true" />
             </span>
+            
+            <!-- Profile Dropdown -->
+            <div v-if="showProfileDropdown" class="dropdown-menu dropdown-menu-end show shadow-sm border-0 mt-2" style="right: 0; min-width: 200px; position: absolute;" @click.stop>
+              <div class="px-3 py-2 border-bottom d-sm-none">
+                <p class="mb-0 fw-bold">{{ currentUser ? currentUser.full_name : 'Guest' }}</p>
+                <small class="text-muted text-capitalize">{{ currentUser ? currentUser.role : 'User' }}</small>
+              </div>
+              <RouterLink to="/profile" class="dropdown-item d-flex align-items-center gap-2 py-2" @click="closeDropdowns">
+                <User :size="16" /> Akun Saya
+              </RouterLink>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger" @click="handleLogout">
+                <LogOut :size="16" /> Keluar
+              </button>
+            </div>
           </div>
-
-          <button class="topbar-icon text-danger ms-2" type="button" title="Logout" @click="handleLogout">
-            <LogOut :size="18" aria-hidden="true" />
-          </button>
         </div>
       </header>
 

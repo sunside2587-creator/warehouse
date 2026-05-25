@@ -165,6 +165,49 @@ router.post('/register', async (req, res) => {
     handleError(res, error);
   }
 });
+
+router.patch('/profile/password', authenticateToken, async (req, res) => {
+  try {
+    const { old_password, new_password } = req.body;
+    if (!old_password || !new_password) {
+      return res.status(400).json({ message: 'Password lama dan baru wajib diisi.' });
+    }
+
+    if (new_password.length < 6) {
+      return res.status(400).json({ message: 'Password baru minimal 6 karakter.' });
+    }
+
+    const userId = req.user.user_id;
+    const users = await query('SELECT password_hash FROM users WHERE user_id = ?', [userId]);
+    
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'User tidak ditemukan.' });
+    }
+
+    const user = users[0];
+    let isMatch = false;
+
+    // Check if using the dummy password workaround
+    if (user.password_hash.startsWith('$2b$10$dummyhash')) {
+      isMatch = (old_password === 'password123');
+    } else {
+      isMatch = await bcrypt.compare(old_password, user.password_hash);
+    }
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Password lama salah.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const newPasswordHash = await bcrypt.hash(new_password, salt);
+
+    await query('UPDATE users SET password_hash = ? WHERE user_id = ?', [newPasswordHash, userId]);
+
+    res.json({ message: 'Password berhasil diubah.' });
+  } catch (error) {
+    handleError(res, error);
+  }
+});
 router.get('/dashboard', authenticateToken, async (_req, res) => {
   try {
     const [summary] = await query(`
