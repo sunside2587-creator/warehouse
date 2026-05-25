@@ -23,9 +23,10 @@ const router = useRouter();
 const isSidebarOpen = ref(false);
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/products', label: 'Produk', icon: PackageSearch },
-  { to: '/transactions', label: 'Transaksi Stok', icon: ArrowLeftRight },
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'staff', 'viewer'] },
+  { to: '/products', label: 'Produk', icon: PackageSearch, roles: ['admin', 'staff', 'viewer'] },
+  { to: '/transactions', label: 'Transaksi Stok', icon: ArrowLeftRight, roles: ['admin', 'staff', 'viewer'] },
+  { to: '/users', label: 'Pengguna', icon: UserRound, roles: ['admin'] },
 ];
 
 const pageTitle = computed(
@@ -84,10 +85,16 @@ const toggleSidebar = () => {
 
       <nav class="sidebar-nav" aria-label="Navigasi utama">
         <p class="sidebar-label">Menu Utama</p>
-        <RouterLink v-for="item in navItems" :key="item.to" class="sidebar-link" :to="item.to">
-          <component :is="item.icon" :size="18" aria-hidden="true" />
-          <span>{{ item.label }}</span>
-        </RouterLink>
+        <template v-for="item in navItems" :key="item.to">
+          <RouterLink 
+            v-if="!item.roles || (currentUser && item.roles.includes(currentUser.role))"
+            class="sidebar-link" 
+            :to="item.to"
+          >
+            <component :is="item.icon" :size="18" aria-hidden="true" />
+            <span>{{ item.label }}</span>
+          </RouterLink>
+        </template>
 
         <p class="sidebar-label mt-4"></p>
         

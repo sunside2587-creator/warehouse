@@ -1,45 +1,86 @@
 <template>
   <div class="login-container">
-    <div class="login-card">
-      <div class="brand">
-        <h2>Warehouse</h2>
-        <p>Inventory System</p>
-      </div>
-      
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input 
-            type="text" 
-            id="username" 
-            v-model="username" 
-            placeholder="Masukkan username Anda"
-            required
-            :disabled="isLoading"
-          />
+    <div class="login-wrapper">
+      <div class="login-visual d-none d-lg-flex flex-column justify-content-between p-5 text-white">
+        <div>
+          <div class="brand-logo mb-4 d-flex align-items-center gap-2">
+            <Boxes :size="32" class="text-white" />
+            <h1 class="h3 mb-0 fw-bold tracking-tight">Warehouse<span class="opacity-50 ms-2 fw-light">System</span></h1>
+          </div>
+          <h2 class="display-5 fw-bold mb-3">Modern Inventory<br/>Management</h2>
+          <p class="lead opacity-75">Streamline your supply chain operations with our intuitive dashboard.</p>
         </div>
         
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            v-model="password" 
-            placeholder="Masukkan password Anda"
-            required
-            :disabled="isLoading"
-          />
+        <div class="testimonial">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:40px;height:40px;">W</div>
+            <div>
+              <p class="mb-0 fw-bold">Admin Portal</p>
+              <p class="mb-0 small opacity-75">Secure Access Area</p>
+            </div>
+          </div>
         </div>
+      </div>
+      
+      <div class="login-form-area p-4 p-sm-5 d-flex align-items-center justify-content-center">
+        <div class="w-100" style="max-width: 400px;">
+          <div class="text-center mb-5 d-lg-none">
+            <Boxes :size="48" class="text-primary mb-3" />
+            <h2 class="h3 fw-bold">Warehouse System</h2>
+            <p class="text-muted">Sign in to your account</p>
+          </div>
 
-        <div v-if="error" class="error-message">
-          {{ error }}
+          <div class="mb-5 d-none d-lg-block">
+            <h3 class="h4 fw-bold mb-2">Welcome back</h3>
+            <p class="text-muted">Please enter your details to sign in.</p>
+          </div>
+          
+          <form @submit.prevent="handleLogin" class="auth-form">
+            <div class="form-floating mb-4">
+              <input 
+                type="text" 
+                id="username" 
+                class="form-control"
+                v-model="username" 
+                placeholder="Username"
+                required
+                :disabled="isLoading"
+              />
+              <label for="username">Username</label>
+            </div>
+            
+            <div class="form-floating mb-4 position-relative">
+              <input 
+                type="password" 
+                id="password" 
+                class="form-control"
+                v-model="password" 
+                placeholder="Password"
+                required
+                :disabled="isLoading"
+              />
+              <label for="password">Password</label>
+            </div>
+
+            <div v-if="error" class="alert alert-danger d-flex align-items-center gap-2 mb-4 py-2 px-3 border-0 bg-danger bg-opacity-10 text-danger rounded-3 fade show" role="alert">
+               <AlertCircle :size="18" />
+               <small class="fw-medium">{{ error }}</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm login-btn" :disabled="isLoading">
+              <span v-if="isLoading" class="d-flex align-items-center justify-content-center gap-2">
+                <RefreshCw class="fa-spin" :size="18" />
+                Signing in...
+              </span>
+              <span v-else>Sign In</span>
+            </button>
+            
+            <p class="text-center mt-4 text-muted small">
+              Protected by JWT Authentication. Use your registered credentials to access the system.
+            </p>
+          </form>
         </div>
-
-        <button type="submit" class="btn-login" :disabled="isLoading">
-          <span v-if="isLoading">Memproses...</span>
-          <span v-else>Masuk</span>
-        </button>
-      </form>
+      </div>
     </div>
   </div>
 </template>
@@ -48,6 +89,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { api, getErrorMessage } from '../services/api';
+import { Boxes, AlertCircle, RefreshCw } from 'lucide-vue-next';
 
 const router = useRouter();
 
@@ -83,108 +125,114 @@ async function handleLogin() {
 
 <style scoped>
 .login-container {
+  min-height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: #f3f4f6; /* fallback */
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background-color: var(--bg-primary);
+  padding: 1rem;
+}
+
+.login-wrapper {
+  display: flex;
   width: 100%;
+  max-width: 1100px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.5);
+  min-height: 600px;
+}
+
+.login-visual {
+  flex: 1;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #2563eb 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glassmorphism elements inside visual area */
+.login-visual::before {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 100;
+  top: -20%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
 }
 
-.login-card {
-  background: var(--bg-surface);
-  padding: 2.5rem;
+.login-visual::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
+}
+
+.login-form-area {
+  flex: 1.2;
+  background-color: var(--bg-surface);
+}
+
+.auth-form .form-floating .form-control {
+  border: 2px solid #e5e7eb;
+  background-color: #f9fafb;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid var(--border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #1f2937;
 }
 
-.brand {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.brand h2 {
-  font-size: 2rem;
-  color: var(--text-primary);
-  margin-bottom: 0.2rem;
-}
-
-.brand p {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-}
-
-.form-group input:focus {
-  outline: none;
+.auth-form .form-floating .form-control:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(var(--accent-primary-rgb), 0.2);
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.1);
 }
 
-.form-group input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.auth-form .form-floating label {
+  color: #6b7280;
+  padding-left: 1rem;
 }
 
-.btn-login {
-  width: 100%;
-  padding: 0.8rem;
-  background-color: var(--accent-primary);
-  color: white;
+.login-btn {
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #2563eb 100%);
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-.btn-login:hover:not(:disabled) {
-  background-color: var(--accent-hover);
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25) !important;
 }
 
-.btn-login:disabled {
+.login-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-btn:disabled {
   opacity: 0.7;
-  cursor: not-allowed;
+  background: #9ca3af;
 }
 
-.error-message {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  text-align: center;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+/* Animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.fa-spin {
+  animation: spin 1s linear infinite;
 }
 </style>

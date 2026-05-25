@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import DashboardView from '../views/DashboardView.vue';
 import ProductsView from '../views/ProductsView.vue';
 import TransactionsView from '../views/TransactionsView.vue';
+import UsersView from '../views/UsersView.vue';
 
 import LoginView from '../views/LoginView.vue';
 
@@ -28,6 +29,12 @@ const routes = [
     path: '/transactions',
     name: 'transactions',
     component: TransactionsView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/users',
+    name: 'users',
+    component: UsersView,
     meta: { requiresAuth: true }
   },
 ];
