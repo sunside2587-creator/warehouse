@@ -335,7 +335,7 @@ onMounted(async () => {
                     <th style="width: 100px;">Tipe</th>
                     <th class="text-end" style="width: 60px;">Qty</th>
                     <th style="width: 150px;">Petugas</th>
-                    <th style="width: 100px;">Tanggal</th>
+                    <th style="width: 100px;">Waktu</th>
                     <th v-if="userRole !== 'viewer'" class="text-end" style="width: 60px;">Aksi</th>
                   </tr>
                 </thead>
