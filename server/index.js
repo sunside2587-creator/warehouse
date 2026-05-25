@@ -122,7 +122,42 @@ app.post('/api/login', async (req, res) => {
     handleError(res, error);
   }
 });
+app.post('/api/register', async (req, res) => {
+  try {
+    const { username, password, full_name, email } = req.body;
+    if (!username || !password || !full_name || !email) {
+      return res.status(400).json({ message: 'Semua kolom wajib diisi.' });
+    }
 
+    const existingUsers = await query(
+      'SELECT username, email FROM users WHERE username = ? OR email = ?',
+      [username, email]
+    );
+
+    if (existingUsers.length > 0) {
+      const isUsernameTaken = existingUsers.some((u) => u.username === username);
+      if (isUsernameTaken) {
+        return res.status(409).json({ message: 'Username sudah digunakan.' });
+      }
+      return res.status(409).json({ message: 'Email sudah digunakan.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const result = await query(
+      `INSERT INTO users (username, password_hash, full_name, role, email) VALUES (?, ?, ?, 'viewer', ?)`,
+      [username, passwordHash, full_name, email]
+    );
+
+    res.status(201).json({
+      message: 'Registrasi berhasil. Silakan login.',
+      user_id: result.insertId
+    });
+  } catch (error) {
+    handleError(res, error);
+  }
+});
 app.get('/api/dashboard', authenticateToken, async (_req, res) => {
   try {
     const [summary] = await query(`

@@ -5,12 +5,19 @@ import TransactionsView from '../views/TransactionsView.vue';
 import UsersView from '../views/UsersView.vue';
 
 import LoginView from '../views/LoginView.vue';
+import RegisterView from '../views/RegisterView.vue';
 
 const routes = [
   {
     path: '/login',
     name: 'login',
     component: LoginView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterView,
     meta: { requiresAuth: false }
   },
   {

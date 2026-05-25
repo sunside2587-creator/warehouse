@@ -80,7 +80,8 @@
             </button>
             
             <p class="text-center mt-4 text-muted small">
-              Protected by JWT Authentication.<br/>Use your registered credentials to access the system.
+              Protected by JWT Authentication.<br/>
+              Belum punya akun? <RouterLink to="/register" class="text-primary text-decoration-none fw-semibold">Daftar di sini</RouterLink>
             </p>
           </form>
         </div>
