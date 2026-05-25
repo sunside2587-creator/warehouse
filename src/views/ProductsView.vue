@@ -29,6 +29,9 @@ const suppliers = ref([]);
 const searchQuery = ref('');
 const stockDrafts = reactive({});
 
+const userStr = localStorage.getItem('auth_user');
+const userRole = ref(userStr ? JSON.parse(userStr).role : 'viewer');
+
 const filteredProducts = computed(() => {
   if (!searchQuery.value.trim()) return products.value;
   const q = searchQuery.value.toLowerCase();
@@ -318,7 +321,7 @@ onMounted(loadProducts);
   </div>
 
   <div class="row g-4 mt-1">
-    <div class="col-12 col-xl-4">
+    <div v-if="userRole !== 'viewer'" class="col-12 col-xl-4">
       <section class="data-panel">
         <div class="panel-header">
           <h2 class="h5 mb-0 d-flex align-items-center gap-2">
@@ -507,7 +510,7 @@ onMounted(loadProducts);
       </section>
     </div>
 
-    <div class="col-12 col-xl-8">
+    <div :class="userRole !== 'viewer' ? 'col-12 col-xl-8' : 'col-12'">
       <section class="data-panel">
         <div class="panel-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
           <div class="d-flex align-items-center gap-2">
@@ -536,15 +539,15 @@ onMounted(loadProducts);
                 <th>Supplier</th>
                 <th class="text-end">Stok</th>
                 <th class="text-end">Harga</th>
-                <th class="text-end">Aksi</th>
+                <th v-if="userRole !== 'viewer'" class="text-end">Aksi</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="loading">
-                <td colspan="7" class="text-center text-muted py-4">Memuat produk...</td>
+                <td :colspan="userRole !== 'viewer' ? 7 : 6" class="text-center text-muted py-4">Memuat produk...</td>
               </tr>
               <tr v-else-if="!products.length">
-                <td colspan="7" class="text-center text-muted py-4">Belum ada produk.</td>
+                <td :colspan="userRole !== 'viewer' ? 7 : 6" class="text-center text-muted py-4">Belum ada produk.</td>
               </tr>
               <tr v-for="product in filteredProducts" :key="product.product_id">
                 <td><code>{{ product.sku }}</code></td>
@@ -555,7 +558,7 @@ onMounted(loadProducts);
                 <td>{{ product.category_name }}</td>
                 <td>{{ product.supplier_name }}</td>
                 <td class="text-end">
-                  <div class="stock-editor ms-auto">
+                  <div v-if="userRole !== 'viewer'" class="stock-editor ms-auto">
                     <input
                       v-model.number="stockDrafts[product.product_id]"
                       class="form-control form-control-sm text-end"
@@ -586,9 +589,13 @@ onMounted(loadProducts);
                       <Save :size="15" aria-hidden="true" />
                     </button>
                   </div>
+                  <div v-else>
+                    <span class="fw-bold">{{ formatter.format(Number(product.stock_quantity)) }}</span>
+                    <span class="text-muted small ms-1">{{ product.unit }}</span>
+                  </div>
                 </td>
                 <td class="text-end">{{ currencyFormatter.format(Number(product.price)) }}</td>
-                <td class="text-end">
+                <td v-if="userRole !== 'viewer'" class="text-end">
                   <button
                     class="btn btn-sm btn-outline-danger icon-only"
                     type="button"

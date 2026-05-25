@@ -25,6 +25,14 @@ function authenticateToken(req, res, next) {
   });
 }
 
+function requireStaffOrAdmin(req, res, next) {
+  if (req.user && req.user.role !== 'viewer') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Akses ditolak. Anda tidak memiliki izin untuk melakukan tindakan ini.' });
+  }
+}
+
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST || '127.0.0.1',
   port: Number(process.env.MYSQL_PORT || 3306),
@@ -202,7 +210,7 @@ router.get('/categories', authenticateToken, async (_req, res) => {
   }
 });
 
-router.post('/categories', authenticateToken, async (req, res) => {
+router.post('/categories', authenticateToken, requireStaffOrAdmin, async (req, res) => {
   try {
     const categoryName = req.body.category_name?.trim();
     const description = req.body.description?.trim() || null;
@@ -241,7 +249,7 @@ router.get('/suppliers', authenticateToken, async (_req, res) => {
   }
 });
 
-router.post('/suppliers', authenticateToken, async (req, res) => {
+router.post('/suppliers', authenticateToken, requireStaffOrAdmin, async (req, res) => {
   try {
     const supplierName = req.body.supplier_name?.trim();
     const contactName = req.body.contact_name?.trim() || null;
@@ -336,7 +344,7 @@ router.get('/stock-transactions', authenticateToken, async (_req, res) => {
   }
 });
 
-router.post('/products', authenticateToken, async (req, res) => {
+router.post('/products', authenticateToken, requireStaffOrAdmin, async (req, res) => {
   try {
     const {
       sku,
@@ -375,7 +383,7 @@ router.post('/products', authenticateToken, async (req, res) => {
   }
 });
 
-router.patch('/products/:id', authenticateToken, async (req, res) => {
+router.patch('/products/:id', authenticateToken, requireStaffOrAdmin, async (req, res) => {
   try {
     const productId = Number(req.params.id);
     const stockQuantity = Number(req.body.stock_quantity);
@@ -407,7 +415,7 @@ router.patch('/products/:id', authenticateToken, async (req, res) => {
   }
 });
 
-router.delete('/products/:id', authenticateToken, async (req, res) => {
+router.delete('/products/:id', authenticateToken, requireStaffOrAdmin, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
@@ -439,7 +447,7 @@ router.delete('/products/:id', authenticateToken, async (req, res) => {
   }
 });
 
-router.patch('/products/:id/stock', authenticateToken, async (req, res) => {
+router.patch('/products/:id/stock', authenticateToken, requireStaffOrAdmin, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
@@ -503,7 +511,7 @@ router.patch('/products/:id/stock', authenticateToken, async (req, res) => {
   }
 });
 
-router.delete('/stock-transactions/:id', authenticateToken, async (req, res) => {
+router.delete('/stock-transactions/:id', authenticateToken, requireStaffOrAdmin, async (req, res) => {
   const connection = await pool.getConnection();
 
   try {

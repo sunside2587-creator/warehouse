@@ -13,6 +13,9 @@ const users = ref([]);
 const transactions = ref([]);
 const searchQuery = ref('');
 
+const userStr = localStorage.getItem('auth_user');
+const userRole = ref(userStr ? JSON.parse(userStr).role : 'viewer');
+
 const filteredTransactions = computed(() => {
   if (!searchQuery.value.trim()) return transactions.value;
   const q = searchQuery.value.toLowerCase();
@@ -225,7 +228,7 @@ onMounted(async () => {
   <div v-if="success" class="alert alert-success mt-4" role="status">{{ success }}</div>
 
   <div class="row g-4 mt-1">
-    <div class="col-12 col-xl-4">
+    <div v-if="userRole !== 'viewer'" class="col-12 col-xl-4">
       <section class="data-panel">
         <div class="panel-header">
           <h2 class="h5 mb-0">Input Transaksi</h2>
@@ -275,7 +278,7 @@ onMounted(async () => {
       </section>
     </div>
 
-    <div class="col-12 col-xl-8">
+    <div :class="userRole !== 'viewer' ? 'col-12 col-xl-8' : 'col-12'">
       <section class="data-panel">
         <div class="panel-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
           <div class="d-flex align-items-center gap-2">
@@ -333,7 +336,7 @@ onMounted(async () => {
                     <th class="text-end" style="width: 60px;">Qty</th>
                     <th style="width: 150px;">Petugas</th>
                     <th style="width: 100px;">Tanggal</th>
-                    <th class="text-end" style="width: 60px;">Aksi</th>
+                    <th v-if="userRole !== 'viewer'" class="text-end" style="width: 60px;">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -353,7 +356,7 @@ onMounted(async () => {
                     <td class="text-end" style="width: 60px;">{{ formatter.format(Number(transaction.quantity)) }}</td>
                     <td class="text-truncate" style="max-width: 150px;">{{ transaction.user?.full_name || transaction.full_name || '-' }}</td>
                     <td style="width: 100px;">{{ new Date(transaction.transaction_date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}</td>
-                    <td class="text-end" style="width: 60px;">
+                    <td v-if="userRole !== 'viewer'" class="text-end" style="width: 60px;">
                       <button
                         class="btn btn-sm btn-outline-danger icon-only"
                         type="button"
