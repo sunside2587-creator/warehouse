@@ -1,37 +1,41 @@
 <template>
   <div class="login-container">
     <div class="login-wrapper">
-      <div class="login-visual d-none d-lg-flex flex-column justify-content-between p-5 text-white">
-        <div>
+      <div class="login-visual d-none d-md-flex flex-column justify-content-between p-5 text-white">
+        <div class="position-relative z-1">
           <div class="brand-logo mb-4 d-flex align-items-center gap-2">
-            <Boxes :size="32" class="text-white" />
-            <h1 class="h3 mb-0 fw-bold tracking-tight">Warehouse<span class="opacity-50 ms-2 fw-light">System</span></h1>
+            <div class="logo-icon bg-white text-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <Boxes :size="28" />
+            </div>
+            <h1 class="h3 mb-0 fw-bold tracking-tight text-white">Warehouse<span class="opacity-75 ms-1 fw-light">System</span></h1>
           </div>
-          <h2 class="display-5 fw-bold mb-3">Modern Inventory<br/>Management</h2>
-          <p class="lead opacity-75">Streamline your supply chain operations with our intuitive dashboard.</p>
+          <h2 class="display-5 fw-bold mb-4 text-white lh-sm">Modernize Your<br/>Inventory</h2>
+          <p class="lead opacity-75 pe-4">Experience a seamless and powerful dashboard to manage your entire supply chain with ease.</p>
         </div>
         
-        <div class="testimonial">
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:40px;height:40px;">W</div>
+        <div class="testimonial position-relative z-1">
+          <div class="d-flex align-items-center gap-3 bg-white bg-opacity-10 p-3 rounded-4 backdrop-blur">
+            <div class="avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width:45px;height:45px;">A</div>
             <div>
-              <p class="mb-0 fw-bold">Admin Portal</p>
+              <p class="mb-0 fw-bold text-white">Admin Portal</p>
               <p class="mb-0 small opacity-75">Secure Access Area</p>
             </div>
           </div>
         </div>
       </div>
       
-      <div class="login-form-area p-4 p-sm-5 d-flex align-items-center justify-content-center">
-        <div class="w-100" style="max-width: 400px;">
-          <div class="text-center mb-5 d-lg-none">
-            <Boxes :size="48" class="text-primary mb-3" />
-            <h2 class="h3 fw-bold">Warehouse System</h2>
+      <div class="login-form-area p-4 p-sm-5 d-flex align-items-center justify-content-center position-relative">
+        <div class="w-100 position-relative z-1" style="max-width: 400px;">
+          <div class="text-center mb-5 d-md-none">
+            <div class="logo-icon bg-primary text-white rounded-3 d-inline-flex align-items-center justify-content-center mb-3 shadow" style="width: 56px; height: 56px;">
+              <Boxes :size="32" />
+            </div>
+            <h2 class="h3 fw-bold text-dark">Warehouse System</h2>
             <p class="text-muted">Sign in to your account</p>
           </div>
 
-          <div class="mb-5 d-none d-lg-block">
-            <h3 class="h4 fw-bold mb-2">Welcome back</h3>
+          <div class="mb-5 d-none d-md-block text-center text-md-start">
+            <h3 class="h3 fw-bold mb-2 text-dark">Welcome back</h3>
             <p class="text-muted">Please enter your details to sign in.</p>
           </div>
           
@@ -67,16 +71,16 @@
                <small class="fw-medium">{{ error }}</small>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm login-btn" :disabled="isLoading">
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow login-btn text-white" :disabled="isLoading">
               <span v-if="isLoading" class="d-flex align-items-center justify-content-center gap-2">
-                <RefreshCw class="fa-spin" :size="18" />
+                <RefreshCw class="fa-spin text-white" :size="18" />
                 Signing in...
               </span>
-              <span v-else>Sign In</span>
+              <span v-else class="text-white">Sign In</span>
             </button>
             
             <p class="text-center mt-4 text-muted small">
-              Protected by JWT Authentication. Use your registered credentials to access the system.
+              Protected by JWT Authentication.<br/>Use your registered credentials to access the system.
             </p>
           </form>
         </div>
@@ -112,7 +116,6 @@ async function handleLogin() {
       localStorage.setItem('auth_token', response.data.token);
       localStorage.setItem('auth_user', JSON.stringify(response.data.user));
       
-      // Redirect to dashboard
       router.push('/');
     }
   } catch (err) {
@@ -131,8 +134,8 @@ async function handleLogin() {
   top: 0;
   left: 0;
   z-index: 1000;
-  background-color: #f3f4f6; /* fallback */
-  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  /* Deep oceanic blue background */
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,33 +145,34 @@ async function handleLogin() {
 .login-wrapper {
   display: flex;
   width: 100%;
-  max-width: 1100px;
-  background: rgba(255, 255, 255, 0.9);
+  max-width: 1000px;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.2);
   min-height: 600px;
 }
 
 .login-visual {
-  flex: 1;
-  background: linear-gradient(135deg, var(--accent-primary) 0%, #2563eb 100%);
+  flex: 1.2;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
   position: relative;
   overflow: hidden;
 }
 
-/* Glassmorphism elements inside visual area */
+/* Abstract shapes inside the blue panel */
 .login-visual::before {
   content: '';
   position: absolute;
-  top: -20%;
-  left: -10%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+  top: -15%;
+  left: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.4) 0%, rgba(59, 130, 246, 0) 70%);
   border-radius: 50%;
+  z-index: 0;
 }
 
 .login-visual::after {
@@ -176,45 +180,54 @@ async function handleLogin() {
   position: absolute;
   bottom: -10%;
   right: -20%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(147, 197, 253, 0.3) 0%, rgba(37, 99, 235, 0) 70%);
   border-radius: 50%;
+  z-index: 0;
 }
 
 .login-form-area {
-  flex: 1.2;
-  background-color: var(--bg-surface);
+  flex: 1;
+  background-color: #ffffff;
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .auth-form .form-floating .form-control {
-  border: 2px solid #e5e7eb;
-  background-color: #f9fafb;
+  border: 2px solid #e2e8f0;
+  background-color: #f8fafc;
   border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #1f2937;
+  transition: all 0.3s ease;
+  color: #0f172a;
+  font-weight: 500;
 }
 
 .auth-form .form-floating .form-control:focus {
-  border-color: var(--accent-primary);
+  border-color: #2563eb;
   background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.1);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
 .auth-form .form-floating label {
-  color: #6b7280;
+  color: #64748b;
   padding-left: 1rem;
 }
 
 .login-btn {
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, var(--accent-primary) 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   border: none;
+  font-size: 1.1rem;
 }
 
 .login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5) !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
 }
 
 .login-btn:active:not(:disabled) {
@@ -223,7 +236,7 @@ async function handleLogin() {
 
 .login-btn:disabled {
   opacity: 0.7;
-  background: #9ca3af;
+  background: #94a3b8;
 }
 
 /* Animations */
