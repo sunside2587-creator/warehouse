@@ -104,6 +104,30 @@ const form = reactive({
   unit: 'pcs',
 });
 
+const formattedPrice = computed({
+  get: () => form.price === 0 ? '' : formatter.format(form.price),
+  set: (val) => {
+    const num = val.toString().replace(/\D/g, '');
+    form.price = num ? Number(num) : 0;
+  }
+});
+
+const formattedStock = computed({
+  get: () => form.stock_quantity === 0 ? '' : formatter.format(form.stock_quantity),
+  set: (val) => {
+    const num = val.toString().replace(/\D/g, '');
+    form.stock_quantity = num ? Number(num) : 0;
+  }
+});
+
+const formattedReorder = computed({
+  get: () => form.reorder_level === 0 ? '' : formatter.format(form.reorder_level),
+  set: (val) => {
+    const num = val.toString().replace(/\D/g, '');
+    form.reorder_level = num ? Number(num) : 0;
+  }
+});
+
 const categoryForm = reactive({
   category_name: '',
   description: '',
@@ -361,20 +385,19 @@ onMounted(loadProducts);
               <label class="form-label" for="stock_quantity">Stok Awal</label>
               <input
                 id="stock_quantity"
-                v-model.number="form.stock_quantity"
+                v-model="formattedStock"
                 class="form-control"
-                min="1"
-                type="number"
+                type="text"
                 required
               />
             </div>
             <div class="col-6">
               <label class="form-label" for="reorder_level">Reorder</label>
-              <input id="reorder_level" v-model.number="form.reorder_level" class="form-control" min="0" type="number" />
+              <input id="reorder_level" v-model="formattedReorder" class="form-control" type="text" />
             </div>
             <div class="col-6">
               <label class="form-label" for="price">Harga</label>
-              <input id="price" v-model.number="form.price" class="form-control" min="0" step="100" type="number" required />
+              <input id="price" v-model="formattedPrice" class="form-control" type="text" required />
             </div>
             <div class="col-6">
               <label class="form-label" for="unit">Satuan</label>

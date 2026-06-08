@@ -98,6 +98,14 @@ const form = reactive({
   notes: '',
 });
 
+const formattedQuantity = computed({
+  get: () => form.quantity === 0 ? '' : formatter.format(form.quantity),
+  set: (val) => {
+    const num = val.toString().replace(/\D/g, '');
+    form.quantity = num ? Number(num) : 0;
+  }
+});
+
 function resetForm() {
   form.product_id = products.value[0]?.product_id || '';
   form.transaction_type = 'IN';
@@ -254,7 +262,7 @@ onMounted(async () => {
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label" for="quantity">Jumlah</label>
-              <input id="quantity" v-model.number="form.quantity" class="form-control" min="1" type="number" required />
+              <input id="quantity" v-model="formattedQuantity" class="form-control" type="text" required />
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label" for="user_id">Petugas</label>
