@@ -27,6 +27,8 @@ const route = useRoute();
 const router = useRouter();
 const isSidebarOpen = ref(false);
 
+const formatter = new Intl.NumberFormat('id-ID');
+
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'staff', 'viewer'] },
   { to: '/products', label: 'Produk', icon: PackageSearch, roles: ['admin', 'staff', 'viewer'] },
@@ -212,7 +214,7 @@ const closeDropdowns = () => {
                     <div class="text-danger mt-1"><AlertTriangle :size="18" /></div>
                     <div>
                       <p class="mb-1 fw-bold text-wrap lh-sm" style="font-size: 0.9rem;">{{ item.product_name }}</p>
-                      <p class="mb-0 text-muted small">Sisa stok: <strong class="text-danger">{{ item.stock_quantity }} {{ item.unit }}</strong> (Batas: {{ item.reorder_level }})</p>
+                      <p class="mb-0 text-muted small">Sisa stok: <strong class="text-danger">{{ formatter.format(Number(item.stock_quantity)) }} {{ item.unit }}</strong> (Batas: {{ formatter.format(Number(item.reorder_level)) }})</p>
                     </div>
                   </div>
                 </div>
