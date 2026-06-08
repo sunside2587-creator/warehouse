@@ -17,7 +17,8 @@ import {
   AlertTriangle,
   LogOut,
   User,
-  CheckCircle2
+  CheckCircle2,
+  Truck
 } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
 import { api } from './services/api';
@@ -29,6 +30,7 @@ const isSidebarOpen = ref(false);
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'staff', 'viewer'] },
   { to: '/products', label: 'Produk', icon: PackageSearch, roles: ['admin', 'staff', 'viewer'] },
+  { to: '/suppliers', label: 'Supplier', icon: Truck, roles: ['admin', 'staff', 'viewer'] },
   { to: '/transactions', label: 'Transaksi Stok', icon: ArrowLeftRight, roles: ['admin', 'staff', 'viewer'] },
   { to: '/users', label: 'Pengguna', icon: UserRound, roles: ['admin'] },
 ];
@@ -38,6 +40,8 @@ const pageTitle = computed(
     ({
       dashboard: 'Dashboard',
       products: 'Produk Gudang',
+      suppliers: 'Daftar Supplier',
+      'supplier-detail': 'Detail Supplier',
       transactions: 'Transaksi Stok',
       login: 'Login',
     })[route.name] || 'Inventaris Gudang',

@@ -3,6 +3,8 @@ import DashboardView from '../views/DashboardView.vue';
 import ProductsView from '../views/ProductsView.vue';
 import TransactionsView from '../views/TransactionsView.vue';
 import UsersView from '../views/UsersView.vue';
+import SuppliersView from '../views/SuppliersView.vue';
+import SupplierDetailView from '../views/SupplierDetailView.vue';
 
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
@@ -49,6 +51,18 @@ const routes = [
     path: '/users',
     name: 'users',
     component: UsersView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/suppliers',
+    name: 'suppliers',
+    component: SuppliersView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/suppliers/:id',
+    name: 'supplier-detail',
+    component: SupplierDetailView,
     meta: { requiresAuth: true }
   },
 ];

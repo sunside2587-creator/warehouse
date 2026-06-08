@@ -33,6 +33,14 @@ function requireStaffOrAdmin(req, res, next) {
   }
 }
 
+function requireAdmin(req, res, next) {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Akses ditolak. Tindakan ini hanya dapat dilakukan oleh admin.' });
+  }
+}
+
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST || '127.0.0.1',
   port: Number(process.env.MYSQL_PORT || 3306),
@@ -317,6 +325,56 @@ router.post('/suppliers', authenticateToken, requireStaffOrAdmin, async (req, re
       supplier_id: result.insertId,
     });
   } catch (error) {
+    handleError(res, error);
+  }
+});
+
+router.get('/suppliers/:id', authenticateToken, async (req, res) => {
+  try {
+    const supplierId = Number(req.params.id);
+    if (!Number.isInteger(supplierId) || supplierId <= 0) {
+      return res.status(400).json({ message: 'Supplier ID tidak valid.' });
+    }
+
+    const rows = await query(`
+      SELECT supplier_id, supplier_name, contact_name, phone, email, address, created_at
+      FROM suppliers
+      WHERE supplier_id = ?
+    `, [supplierId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Supplier tidak ditemukan.' });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    handleError(res, error);
+  }
+});
+
+router.delete('/suppliers/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const supplierId = Number(req.params.id);
+    if (!Number.isInteger(supplierId) || supplierId <= 0) {
+      return res.status(400).json({ message: 'Supplier ID tidak valid.' });
+    }
+
+    const [result] = await pool.execute(
+      'DELETE FROM suppliers WHERE supplier_id = ?',
+      [supplierId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Supplier tidak ditemukan.' });
+    }
+
+    res.json({ message: 'Supplier berhasil dihapus.' });
+  } catch (error) {
+    if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+      return res.status(409).json({ 
+        message: 'Supplier tidak dapat dihapus karena masih ada produk yang menggunakan supplier ini.'
+      });
+    }
     handleError(res, error);
   }
 });
