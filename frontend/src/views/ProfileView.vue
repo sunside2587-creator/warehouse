@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
-import { KeyRound, CheckCircle2, AlertCircle, Save, RefreshCw, UserCircle2 } from 'lucide-vue-next';
+import { KeyRound, CheckCircle2, AlertCircle, Save, RefreshCw, UserCircle2, Eye, EyeOff } from 'lucide-vue-next';
 import { api, getErrorMessage } from '../services/api';
 
 const currentUser = ref(null);
@@ -10,6 +10,10 @@ const form = reactive({
   new_password: '',
   confirm_password: ''
 });
+
+const showOldPassword = ref(false);
+const showNewPassword = ref(false);
+const showConfirmPassword = ref(false);
 
 const loading = ref(false);
 const error = ref('');
@@ -129,10 +133,10 @@ async function handleChangePassword() {
             </div>
 
             <form @submit.prevent="handleChangePassword" class="password-form mt-2">
-              <div class="form-floating mb-4">
+              <div class="form-floating mb-4 position-relative">
                 <input 
-                  type="password" 
-                  class="form-control fw-medium" 
+                  :type="showOldPassword ? 'text' : 'password'" 
+                  class="form-control fw-medium pe-5" 
                   id="old_password" 
                   v-model="form.old_password"
                   placeholder="Password Saat Ini"
@@ -140,14 +144,23 @@ async function handleChangePassword() {
                   :disabled="loading"
                 />
                 <label for="old_password" class="text-muted">Password Saat Ini</label>
+                <button 
+                  type="button" 
+                  class="btn position-absolute top-50 end-0 translate-middle-y border-0 text-muted px-3"
+                  @click="showOldPassword = !showOldPassword"
+                  style="z-index: 5;"
+                >
+                  <Eye v-if="!showOldPassword" :size="20" />
+                  <EyeOff v-else :size="20" />
+                </button>
               </div>
               
               <div class="row g-3 mb-4">
                 <div class="col-12 col-xl-6">
-                  <div class="form-floating">
+                  <div class="form-floating position-relative">
                     <input 
-                      type="password" 
-                      class="form-control fw-medium" 
+                      :type="showNewPassword ? 'text' : 'password'" 
+                      class="form-control fw-medium pe-5" 
                       id="new_password" 
                       v-model="form.new_password"
                       placeholder="Password Baru"
@@ -156,13 +169,22 @@ async function handleChangePassword() {
                       :disabled="loading"
                     />
                     <label for="new_password" class="text-muted">Password Baru</label>
+                    <button 
+                      type="button" 
+                      class="btn position-absolute top-50 end-0 translate-middle-y border-0 text-muted px-3"
+                      @click="showNewPassword = !showNewPassword"
+                      style="z-index: 5;"
+                    >
+                      <Eye v-if="!showNewPassword" :size="20" />
+                      <EyeOff v-else :size="20" />
+                    </button>
                   </div>
                 </div>
                 <div class="col-12 col-xl-6">
-                  <div class="form-floating">
+                  <div class="form-floating position-relative">
                     <input 
-                      type="password" 
-                      class="form-control fw-medium" 
+                      :type="showConfirmPassword ? 'text' : 'password'" 
+                      class="form-control fw-medium pe-5" 
                       id="confirm_password" 
                       v-model="form.confirm_password"
                       placeholder="Konfirmasi Password Baru"
@@ -171,6 +193,15 @@ async function handleChangePassword() {
                       :disabled="loading"
                     />
                     <label for="confirm_password" class="text-muted">Konfirmasi Password Baru</label>
+                    <button 
+                      type="button" 
+                      class="btn position-absolute top-50 end-0 translate-middle-y border-0 text-muted px-3"
+                      @click="showConfirmPassword = !showConfirmPassword"
+                      style="z-index: 5;"
+                    >
+                      <Eye v-if="!showConfirmPassword" :size="20" />
+                      <EyeOff v-else :size="20" />
+                    </button>
                   </div>
                 </div>
               </div>

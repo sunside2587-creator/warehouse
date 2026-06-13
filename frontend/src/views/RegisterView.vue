@@ -83,14 +83,23 @@
               <div class="col-12 col-md-6">
                 <div class="form-floating position-relative">
                   <input 
-                    type="password" 
+                    :type="showPassword ? 'text' : 'password'" 
                     id="password" 
-                    class="form-control"
+                    class="form-control pe-5"
                     v-model="form.password" 
                     placeholder="Password"
                     :disabled="isLoading"
                   />
                   <label for="password">Password</label>
+                  <button 
+                    type="button" 
+                    class="btn position-absolute top-50 end-0 translate-middle-y border-0 text-muted px-3"
+                    @click="showPassword = !showPassword"
+                    style="z-index: 5;"
+                  >
+                    <Eye v-if="!showPassword" :size="20" />
+                    <EyeOff v-else :size="20" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -128,7 +137,7 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { api, getErrorMessage } from '../services/api';
-import { Boxes, AlertCircle, RefreshCw, CheckCircle2 } from 'lucide-vue-next';
+import { Boxes, AlertCircle, RefreshCw, CheckCircle2, Eye, EyeOff } from 'lucide-vue-next';
 
 const router = useRouter();
 
@@ -139,6 +148,7 @@ const form = reactive({
   password: ''
 });
 
+const showPassword = ref(false);
 const error = ref('');
 const success = ref('');
 const isLoading = ref(false);
