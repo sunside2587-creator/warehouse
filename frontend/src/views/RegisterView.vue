@@ -49,7 +49,6 @@
                     class="form-control"
                     v-model="form.full_name" 
                     placeholder="Full Name"
-                    required
                     :disabled="isLoading"
                   />
                   <label for="full_name">Nama Lengkap</label>
@@ -63,7 +62,6 @@
                     class="form-control"
                     v-model="form.email" 
                     placeholder="Email"
-                    required
                     :disabled="isLoading"
                   />
                   <label for="email">Email</label>
@@ -77,7 +75,6 @@
                     class="form-control"
                     v-model="form.username" 
                     placeholder="Username"
-                    required
                     :disabled="isLoading"
                   />
                   <label for="username">Username</label>
@@ -91,8 +88,6 @@
                     class="form-control"
                     v-model="form.password" 
                     placeholder="Password"
-                    required
-                    minlength="6"
                     :disabled="isLoading"
                   />
                   <label for="password">Password</label>
@@ -152,6 +147,17 @@ async function handleRegister() {
   try {
     error.value = '';
     success.value = '';
+    
+    if (!form.full_name || !form.email || !form.username || !form.password) {
+      error.value = 'Semua kolom wajib diisi.';
+      return;
+    }
+    
+    if (form.password.length < 6) {
+      error.value = 'Password minimal 6 karakter.';
+      return;
+    }
+
     isLoading.value = true;
     
     const response = await api.post('/register', form);

@@ -141,6 +141,7 @@ router.post('/login', async (req, res) => {
     handleError(res, error);
   }
 });
+
 router.post('/register', async (req, res) => {
   try {
     const { username, password, full_name, email } = req.body;
