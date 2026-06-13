@@ -1,0 +1,22 @@
+{
+  "name": "warehouse-inventory-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "latest",
+    "axios": "^1.16.0",
+    "bootstrap": "^5.3.8",
+    "lucide-vue-next": "latest",
+    "vue": "latest",
+    "vue-router": "^5.0.6"
+  },
+  "devDependencies": {
+    "vite": "latest"
+  }
+}
