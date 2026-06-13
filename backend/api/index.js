@@ -78,6 +78,10 @@ function handleError(res, error) {
 
 const router = express.Router();
 
+router.get('/', (req, res) => {
+  res.json({ message: 'Warehouse API is running' });
+});
+
 router.get('/health', async (_req, res) => {
   try {
     await query('SELECT 1 AS ok');
