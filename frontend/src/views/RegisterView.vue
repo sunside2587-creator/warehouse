@@ -114,7 +114,7 @@
                <small class="fw-medium">{{ success }}</small>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow login-btn text-white mb-4" :disabled="isLoading || success">
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow login-btn text-white mb-4" :disabled="isLoading || success.length > 0">
               <span v-if="isLoading" class="d-flex align-items-center justify-content-center gap-2">
                 <RefreshCw class="fa-spin text-white" :size="18" />
                 Mendaftarkan...
